@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angel & Lucerito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0509;
+    --bg-1:#170a12;
+    --glow-core:#fff3ee;
+    --glow-pink:#ff8fae;
+    --rose:#ffb7c9;
+    --mauve:#c99aab;
+    --mauve-dim:#8a6270;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    background:var(--bg-0);
+    overflow:hidden;
+  }
+
+  body{
+    font-family:'Manrope',sans-serif;
+    color:var(--rose);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+
+  .backdrop{
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 60% 45% at 50% 62%, rgba(255,143,174,0.16), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,120,150,0.10), transparent 75%),
+      linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+    z-index:0;
+  }
+
+  canvas#stars{
+    position:fixed;
+    inset:0;
+    z-index:1;
+  }
+
+  .stage{
+    position:relative;
+    z-index:3;
+    width:100%;
+    max-width:520px;
+    padding:8vh 24px 6vh;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:clamp(18px, 4vh, 34px);
+  }
+
+  .names{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:clamp(2.1rem, 8vw, 3.1rem);
+    letter-spacing:0.01em;
+    color:var(--glow-core);
+    text-shadow:
+      0 0 18px rgba(255,180,200,0.55),
+      0 0 46px rgba(255,120,160,0.35);
+    line-height:1.15;
+  }
+
+  .names .amp{
+    display:inline-block;
+    font-style:italic;
+    color:var(--glow-pink);
+    margin:0 0.14em;
+    font-weight:400;
+  }
+
+  .since{
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    color:var(--mauve-dim);
+    text-transform:uppercase;
+  }
+
+  .portal-wrap{
+    position:relative;
+    width:min(58vw, 240px);
+    height:min(58vw, 240px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    perspective:900px;
+  }
+
+  .portal-glow{
+    position:absolute;
+    inset:-30%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,235,230,0.9) 0%, rgba(255,143,174,0.35) 38%, transparent 68%);
+    filter:blur(6px);
+    animation:breathe 5.5s ease-in-out infinite;
+  }
+
+  @keyframes breathe{
+    0%,100%{ transform:scale(0.94); opacity:0.85; }
+    50%{ transform:scale(1.05); opacity:1; }
+  }
+
+  .portal-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:1px solid rgba(255,183,201,0.25);
+  }
+
+  .heart-core{
+    position:relative;
+    width:46%;
+    height:46%;
+    z-index:2;
+    filter:drop-shadow(0 0 22px rgba(255,190,205,0.75));
+    animation:spin3d 9s linear infinite;
+  }
+
+  @keyframes spin3d{
+    from{ transform:rotateY(0deg); }
+    to{ transform:rotateY(360deg); }
+  }
+
+  .heart-photo{
+    width:100%;
+    height:100%;
+    background-image:url('mylu.png');
+    background-size:cover;
+    background-position:center;
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath d='M50 86 C20 62, 4 42, 4 24 C4 8, 18 -2, 32 4 C42 8, 50 20, 50 20 C50 20, 58 8, 68 4 C82 -2, 96 8, 96 24 C96 42, 80 62, 50 86 Z'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath d='M50 86 C20 62, 4 42, 4 24 C4 8, 18 -2, 32 4 C42 8, 50 20, 50 20 C50 20, 58 8, 68 4 C82 -2, 96 8, 96 24 C96 42, 80 62, 50 86 Z'/%3E%3C/svg%3E");
+    -webkit-mask-size:100% 100%;
+    mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat;
+    mask-repeat:no-repeat;
+  }
+
+  .orbit{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    animation:spin 22s linear infinite;
+  }
+  .orbit.slow{ animation-duration:34s; animation-direction:reverse; }
+
+  .orbit i{
+    position:absolute;
+    width:3px; height:3px;
+    background:var(--rose);
+    border-radius:1px;
+    box-shadow:0 0 6px 1px rgba(255,183,201,0.8);
+  }
+
+  @keyframes spin{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+  }
+
+  .counter{
+    display:flex;
+    gap:clamp(10px, 3vw, 22px);
+  }
+
+  .counter .unit{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    min-width:52px;
+  }
+
+  .counter .num{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(1.5rem, 6vw, 2rem);
+    color:var(--glow-core);
+    text-shadow:0 0 14px rgba(255,180,200,0.45);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .counter .lbl{
+    font-size:0.62rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--mauve-dim);
+  }
+
+  .surprise-btn{
+    appearance:none;
+    border:1px solid rgba(255,183,201,0.4);
+    background:rgba(255,143,174,0.08);
+    color:var(--rose);
+    font-family:'Manrope',sans-serif;
+    font-size:0.85rem;
+    letter-spacing:0.04em;
+    padding:12px 28px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.25s ease, transform 0.15s ease, border-color 0.25s ease;
+  }
+
+  .surprise-btn:hover{
+    background:rgba(255,143,174,0.16);
+    border-color:rgba(255,183,201,0.7);
+  }
+
+  .surprise-btn:active{ transform:scale(0.97); }
+
+  .reveal{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    background:rgba(6,3,5,0.72);
+    backdrop-filter:blur(6px);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.4s ease;
+  }
+
+  .reveal.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .reveal-card{
+    max-width:400px;
+    text-align:center;
+    padding:34px 28px;
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(30,12,20,0.9), rgba(15,6,10,0.9));
+    border:1px solid rgba(255,183,201,0.25);
+    box-shadow:0 0 60px rgba(255,143,174,0.18);
+    transform:translateY(14px) scale(0.98);
+    transition:transform 0.4s ease;
+  }
+
+  .reveal.open .reveal-card{ transform:translateY(0) scale(1); }
+
+  .reveal-card p{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.35rem;
+    line-height:1.5;
+    color:var(--glow-core);
+    font-style:italic;
+  }
+
+  .reveal-close{
+    margin-top:22px;
+    background:none;
+    border:none;
+    color:var(--mauve-dim);
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+
+  @media (max-height:640px){
+    .stage{ gap:16px; padding:5vh 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop"></div>
+<canvas id="stars"></canvas>
+
+<main class="stage">
+  <div class="names">Angel<span class="amp">&</span>Lucerito</div>
+  <div class="since">Juntos desde el 23 de febrero de 2025</div>
+
+  <div class="portal-wrap">
+    <div class="portal-glow"></div>
+    <div class="portal-ring"></div>
+    <div class="orbit" id="orbitA"></div>
+    <div class="orbit slow" id="orbitB"></div>
+    <div class="heart-core">
+      <div class="heart-photo"></div>
+    </div>
+  </div>
+
+  <div class="counter" id="counter">
+    <div class="unit"><span class="num" id="d">0</span><span class="lbl">Días</span></div>
+    <div class="unit"><span class="num" id="h">0</span><span class="lbl">Horas</span></div>
+    <div class="unit"><span class="num" id="m">0</span><span class="lbl">Min</span></div>
+    <div class="unit"><span class="num" id="s">0</span><span class="lbl">Seg</span></div>
+  </div>
+
+  <button class="surprise-btn" id="surpriseBtn">toca aquí ✦</button>
+</main>
+
+<div class="reveal" id="reveal">
+  <div class="reveal-card">
+    <p id="revealText"></p>
+    <button class="reveal-close" id="revealClose">cerrar</button>
+  </div>
+</div>
+
+<script>
+  const startDate = new Date("2025-02-23T00:00:00");
+
+  function pad(n){ return String(n).padStart(2,"0"); }
+
+  function updateCounter(){
+    const now = new Date();
+    let diff = Math.max(0, now - startDate);
+
+    const totalSeconds = Math.floor(diff/1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+
+    document.getElementById("d").textContent = days;
+    document.getElementById("h").textContent = pad(hours);
+    document.getElementById("m").textContent = pad(mins);
+    document.getElementById("s").textContent = pad(secs);
+  }
+  updateCounter();
+  setInterval(updateCounter, 1000);
+
+  const messages = [
+    "Cada día contigo se siente como el primero. Te amo, Lucerito.",
+    "De todas las personas que pude encontrar en este mundo, me alegra que hayas sido tú.",
+    "Gracias por quedarte, por reír conmigo y por hacer que todo tenga más sentido.",
+    "No importa cuánto tiempo pase, contigo siempre quiero sumar un día más."
+  ];
+
+  const reveal = document.getElementById("reveal");
+  const revealText = document.getElementById("revealText");
+  const surpriseBtn = document.getElementById("surpriseBtn");
+  const revealClose = document.getElementById("revealClose");
+
+  surpriseBtn.addEventListener("click", () => {
+    revealText.textContent = messages[Math.floor(Math.random()*messages.length)];
+    reveal.classList.add("open");
+  });
+  revealClose.addEventListener("click", () => reveal.classList.remove("open"));
+  reveal.addEventListener("click", (e) => { if(e.target === reveal) reveal.classList.remove("open"); });
+
+  function buildOrbit(id, count, radiusPct){
+    const el = document.getElementById(id);
+    for(let i=0;i<count;i++){
+      const dot = document.createElement("i");
+      const angle = (360/count)*i;
+      dot.style.left = "50%";
+      dot.style.top = "50%";
+      dot.style.transform = `rotate(${angle}deg) translate(${radiusPct}%) rotate(-${angle}deg)`;
+      el.appendChild(dot);
+    }
+  }
+  buildOrbit("orbitA", 10, 62);
+  buildOrbit("orbitB", 7, 78);
+
+  const canvas = document.getElementById("stars");
+  const ctx = canvas.getContext("2d");
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function initParticles(){
+    particles = [];
+    const count = Math.floor((W*H)/9000);
+    for(let i=0;i<count;i++){
+      particles.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        r: Math.random()*1.6 + 0.4,
+        speed: Math.random()*0.25 + 0.05,
+        alpha: Math.random()*0.5 + 0.15,
+        drift: (Math.random()-0.5)*0.15
+      });
+    }
+  }
+  initParticles();
+  window.addEventListener("resize", initParticles);
+
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of particles){
+      p.y -= p.speed;
+      p.x += p.drift;
+      if(p.y < -5){ p.y = H+5; p.x = Math.random()*W; }
+      ctx.fillStyle = `rgba(255,183,201,${p.alpha})`;
+      ctx.fillRect(p.x, p.y, p.r, p.r);
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+</script>
+
+</body>
+</html>
