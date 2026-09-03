@@ -35,6 +35,7 @@
     overflow-x:hidden;
   }
 
+  /* ---------- frame ---------- */
   .frame{
     position:fixed;
     inset:10px;
@@ -43,7 +44,8 @@
     z-index:5;
     pointer-events:none;
   }
-  .frame::before, .frame::after{
+  .frame::before, .frame::after,
+  .frame-corner-tl, .frame-corner-br{
     content:"";
     position:absolute;
     width:16px; height:16px;
@@ -52,6 +54,7 @@
   .frame::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; border-top-left-radius:12px; }
   .frame::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; border-bottom-right-radius:12px; }
 
+  /* ---------- aurora + galaxy backdrop ---------- */
   .backdrop{
     position:fixed;
     inset:0;
@@ -84,6 +87,7 @@
     z-index:1;
   }
 
+  /* ---------- top identity bar ---------- */
   .idbar{
     position:relative;
     z-index:6;
@@ -119,6 +123,7 @@
     font-weight:400;
   }
 
+  /* ---------- love notes ---------- */
   .notes{
     position:relative;
     z-index:6;
@@ -132,20 +137,21 @@
 
   .note{
     flex:0 0 auto;
-    width:150px;
-    padding:14px 14px 16px;
+    width:230px;
+    padding:16px 16px 18px;
     border-radius:14px;
     background:rgba(255,143,174,0.06);
     border:1px solid rgba(255,183,201,0.22);
     font-family:'Cormorant Garamond', serif;
-    font-size:0.98rem;
+    font-size:1rem;
     font-style:italic;
-    line-height:1.35;
+    line-height:1.42;
     color:var(--glow-core);
   }
   .note:nth-child(2n){ transform:rotate(-1.2deg); }
   .note:nth-child(2n+1){ transform:rotate(1deg); }
 
+  /* ---------- centerpiece ---------- */
   .stage{
     position:relative;
     z-index:6;
@@ -235,6 +241,7 @@
     to{ transform:rotate(360deg); }
   }
 
+  /* ---------- counter ---------- */
   .counter{
     display:flex;
     gap:clamp(10px, 3vw, 22px);
@@ -263,6 +270,7 @@
     color:var(--mauve-dim);
   }
 
+  /* ---------- surprise button ---------- */
   .surprise-btn{
     appearance:none;
     border:1px solid rgba(255,183,201,0.4);
@@ -279,6 +287,7 @@
   .surprise-btn:hover{ background:rgba(255,143,174,0.16); border-color:rgba(255,183,201,0.7); }
   .surprise-btn:active{ transform:scale(0.97); }
 
+  /* ---------- reveal card ---------- */
   .reveal{
     position:fixed;
     inset:0;
@@ -327,6 +336,65 @@
     cursor:pointer;
   }
 
+  /* ---------- intro reveal ---------- */
+  .intro{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    background:var(--bg-0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity 0.9s ease;
+  }
+  .intro.hide{ opacity:0; pointer-events:none; }
+
+  .intro-mark{
+    width:64px; height:64px;
+    filter:drop-shadow(0 0 30px rgba(255,150,180,0.9));
+    animation:introPulse 1.3s ease-in-out infinite;
+  }
+  .intro-mark svg{ width:100%; height:100%; display:block; }
+
+  @keyframes introPulse{
+    0%,100%{ transform:scale(0.82); opacity:0.65; }
+    50%{ transform:scale(1.06); opacity:1; }
+  }
+
+  .content{
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity 0.9s ease, transform 0.9s ease;
+  }
+  .content.in{ opacity:1; transform:translateY(0); }
+
+  /* ---------- ambient floating hearts ---------- */
+  .ambient-hearts{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    overflow:hidden;
+  }
+
+  .ambient-heart{
+    position:absolute;
+    bottom:-8%;
+    color:var(--rose);
+    opacity:0;
+    animation-name:ambientRise;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+  }
+
+  @keyframes ambientRise{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    8%{ opacity:0.85; }
+    88%{ opacity:0.6; }
+    100%{ transform:translateY(-112vh) rotate(18deg); opacity:0; }
+  }
+
+  /* ---------- floating heart burst ---------- */
   .burst-heart{
     position:fixed;
     z-index:15;
@@ -340,6 +408,7 @@
     to{ transform:translateY(-120px) scale(1.4); opacity:0; }
   }
 
+  /* ---------- music player ---------- */
   .player{
     position:fixed;
     right:22px;
@@ -388,18 +457,36 @@
 </div>
 <canvas id="stars-far"></canvas>
 <canvas id="stars-near"></canvas>
+<div class="ambient-hearts" id="ambientHearts"></div>
 <div class="frame"></div>
 
+<div class="intro" id="intro">
+  <div class="intro-mark">
+    <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="introGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#fff6f2"/>
+          <stop offset="55%" stop-color="#ffb7c9"/>
+          <stop offset="100%" stop-color="#ff8fae"/>
+        </linearGradient>
+      </defs>
+      <path d="M50 86 C20 62, 4 42, 4 24 C4 8, 18 -2, 32 4 C42 8, 50 20, 50 20 C50 20, 58 8, 68 4 C82 -2, 96 8, 96 24 C96 42, 80 62, 50 86 Z"
+        fill="url(#introGrad)"/>
+    </svg>
+  </div>
+</div>
+
+<div class="content" id="content">
 <div class="idbar">
   <div class="avatar"></div>
   <div class="names">Lucerito<span class="amp">&</span>Angel</div>
 </div>
 
 <div class="notes">
-  <div class="note">Amo tu carita bonita, en especial tus cachetitos.</div>
-  <div class="note">Amo lo mucho que amas los tulipanes.</div>
-  <div class="note">Amo cómo te dedicas a tus estudios de derecho, serás una abogada increíble.</div>
-  <div class="note">Amo, simplemente, que seas tú.</div>
+  <div class="note">Lucerito, entre todas las cosas bonitas que tienes, mis favoritas son tus cachetitos, porque cuando los veo me dan unas ganas enormes de abrazarte y no soltarte. 🥰</div>
+  <div class="note">Me encanta verte luchar por tus sueños estudiando Derecho; eres inteligente, dedicada y capaz de lograr todo lo que te propongas. ❤️</div>
+  <div class="note">Si los tulipanes son tus flores favoritas, para mí tú eres mi flor favorita: tierna, hermosa y especial de una manera que ninguna otra podría ser. 🌷</div>
+  <div class="note">Lucerito, te quiero muchísimo, no solo por tu cara bonita, sino por tu forma de ser: amable, tierna, inteligente y por esa manera tan tuya de hacerme sentir feliz. 💗</div>
 </div>
 
 <main class="stage">
@@ -441,14 +528,12 @@
     <button class="reveal-close" id="revealClose">cerrar</button>
   </div>
 </div>
-
-<div class="player">
-  <button id="playBtn">▶</button>
-  <span>nuestra canción</span>
-  <audio id="song" src="amor.m4a" loop></audio>
 </div>
 
+<audio id="song" src="amor.m4a" loop autoplay></audio>
+
 <script>
+  // ---------- live counter ----------
   const startDate = new Date("2025-02-23T00:00:00");
   function pad(n){ return String(n).padStart(2,"0"); }
   function updateCounter(){
@@ -467,6 +552,7 @@
   updateCounter();
   setInterval(updateCounter, 1000);
 
+  // ---------- surprise button ----------
   const messages = [
     "Cada día contigo se siente como el primero. Te amo, Lucerito.",
     "De todas las personas que pude encontrar en este mundo, me alegra que hayas sido tú.",
@@ -486,6 +572,7 @@
   revealClose.addEventListener("click", () => reveal.classList.remove("open"));
   reveal.addEventListener("click", (e) => { if(e.target === reveal) reveal.classList.remove("open"); });
 
+  // ---------- heart burst on tap ----------
   function burstHearts(originEl){
     const rect = originEl.getBoundingClientRect();
     const cx = rect.left + rect.width/2;
@@ -512,20 +599,17 @@
     setTimeout(()=>h.remove(), 1700);
   });
 
+  // ---------- music player ----------
   const song = document.getElementById("song");
-  const playBtn = document.getElementById("playBtn");
-  let playing = false;
-  playBtn.addEventListener("click", () => {
-    if(!playing){
+  song.play().catch(() => {
+    const startOnce = () => {
       song.play().catch(()=>{});
-      playBtn.textContent = "❚❚";
-    } else {
-      song.pause();
-      playBtn.textContent = "▶";
-    }
-    playing = !playing;
+      document.removeEventListener("click", startOnce);
+    };
+    document.addEventListener("click", startOnce);
   });
 
+  // ---------- orbiting particles ----------
   function buildOrbit(id, count, radiusPct){
     const el = document.getElementById(id);
     for(let i=0;i<count;i++){
@@ -540,6 +624,7 @@
   buildOrbit("orbitA", 10, 62);
   buildOrbit("orbitB", 7, 78);
 
+  // ---------- two-layer starfield for depth ----------
   function makeField(canvasId, density, speedMin, speedMax, sizeMin, sizeMax, alphaMax){
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext("2d");
@@ -585,6 +670,34 @@
 
   makeField("stars-far", 16000, 0.02, 0.08, 1.2, 2.4, 0.35);
   makeField("stars-near", 9000, 0.08, 0.28, 0.4, 1.6, 0.55);
+
+  // ---------- intro reveal sequence ----------
+  const intro = document.getElementById("intro");
+  const content = document.getElementById("content");
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      intro.classList.add("hide");
+      content.classList.add("in");
+    }, 1100);
+    setTimeout(() => intro.remove(), 2000);
+  });
+
+  // ---------- ambient floating hearts ----------
+  const ambientContainer = document.getElementById("ambientHearts");
+  const ambientCount = 16;
+  for(let i=0;i<ambientCount;i++){
+    const h = document.createElement("div");
+    h.className = "ambient-heart";
+    h.textContent = "♥";
+    const size = Math.random()*14 + 10;
+    const duration = Math.random()*10 + 9;
+    const delay = -Math.random()*duration;
+    h.style.left = (Math.random()*100) + "%";
+    h.style.fontSize = size + "px";
+    h.style.animationDuration = duration + "s";
+    h.style.animationDelay = delay + "s";
+    ambientContainer.appendChild(h);
+  }
 </script>
 
 </body>
